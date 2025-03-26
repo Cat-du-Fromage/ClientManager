@@ -2,8 +2,12 @@ package MCR.windows;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
-public class ClientManagerFrame {
+public class ClientManagerFrame extends Subject {
     private final int WINDOW_WIDTH = 500;
     private final int WINDOW_HEIGHT = 300;
     private static ClientManagerFrame instance = null;
@@ -13,6 +17,9 @@ public class ClientManagerFrame {
     private final JComboBox cclient, cflight, ctype;
     private final JButton bdetails, badd, bbookcash, bbookmiles, bstatuses, bquit;
     private final JTextField tcredits;
+
+    // TODO Will be replaced by the real data
+    private int increment = 0;
 
     public static ClientManagerFrame getInstance() {
         if (instance == null) {
@@ -34,11 +41,15 @@ public class ClientManagerFrame {
         cflight = new JComboBox(new String[] {"flight1", "flight2", "flight3", "flight4", "flight5"});
         ctype = new JComboBox(new String[] {"type1", "type2"});
         bdetails = new JButton("Details");
+        bdetails.addActionListener(_ -> createObserverDetails());
         badd = new JButton("Add");
+        badd.addActionListener(_ -> increment());
         bbookcash = new JButton("Book (Cash)");
         bbookmiles = new JButton("Book (Miles)");
         bstatuses = new JButton("Statuses");
+        bstatuses.addActionListener(_ -> createObserverStatus());
         bquit = new JButton("Quit");
+        bquit.addActionListener(_ -> System.exit(0));
         tcredits = new JTextField(10);
 
         initFrame();
@@ -58,13 +69,12 @@ public class ClientManagerFrame {
         frame.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         frame.setPreferredSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
 
-        frame.pack();
+
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
 
     private void initPanels() {
-
         panel1.add(lclient);
         panel1.add(cclient);
         panel1.add(bdetails);
@@ -82,5 +92,30 @@ public class ClientManagerFrame {
         panel4.add(bstatuses);
         panel4.add(bquit);
 
+    }
+
+    public void increment() {
+        increment++;
+        notifyObservers();
+    }
+
+    public int getIncrement() {
+        return increment;
+    }
+
+    private void createObserverDetails() {
+        addObserver(new ClientDetailsFrame(this));
+    }
+
+    private void createObserverStatus() {
+        addObserver(new ClientStatusFrame(this));
+    }
+
+    public ArrayList<Integer> getClients() {
+        ArrayList<Integer> clients = new ArrayList<>();
+        for (int i = 0; i < cclient.getItemCount(); i++) {
+            clients.add(i);
+        }
+        return clients;
     }
 }
