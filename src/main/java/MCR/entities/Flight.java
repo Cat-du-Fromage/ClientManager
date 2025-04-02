@@ -13,4 +13,10 @@ public class Flight {
 
     public String getName() {return name;}
     public double getPrice() {return price;}
+    public double getMiles() {return miles;}
+
+    @Override
+    public String toString() {
+        return name + " (" + miles + " miles)";
+    }
 }

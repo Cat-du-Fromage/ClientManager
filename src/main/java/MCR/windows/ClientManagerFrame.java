@@ -5,10 +5,7 @@ import MCR.entities.Client;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 public class ClientManagerFrame {
     private final int WINDOW_WIDTH = 500;
@@ -44,10 +41,11 @@ public class ClientManagerFrame {
         lcredits = new JLabel("Credits");
         lflight = new JLabel("Flight");
 
-        cclient = new JComboBox();
-        initClients();
-        cflight = new JComboBox();
-        initFlights();
+        //cclient = new JComboBox();
+        cclient = initClients();
+
+        //cflight = new JComboBox();
+        cflight = initFlights();
 
         ctype = new JComboBox();
         updateFlightType();
@@ -60,14 +58,18 @@ public class ClientManagerFrame {
         badd = new JButton("Add");
 
         bbookcash = new JButton("Book (Cash)");
+        bbookcash.addActionListener(_ -> onMoneyBook());
+
         bbookmiles = new JButton("Book (Miles)");
+
+
         bstatuses = new JButton("Statuses");
         bstatuses.addActionListener(_ -> createObserverStatus());
         bquit = new JButton("Quit");
         bquit.addActionListener(_ -> System.exit(0));
         tcredits = new JTextField(10);
 
-        badd.addActionListener(_ -> getCurrentClient().setMoney(Integer.parseInt(tcredits.getText())));
+        badd.addActionListener(_ -> addCurrency());
 
         initFrame();
         initPanels();
@@ -86,19 +88,23 @@ public class ClientManagerFrame {
         }
     }
 
-    private void initClients(){
+    private JComboBox initClients() {
+        JComboBox result = new JComboBox();
         clients = new ArrayList<Client>(2);
         clients.add(new Client("Mathieu", "Rabot"));
         clients.add(new Client("Florian", "Duruz"));
         clients.sort(Client::compareTo);
-        clients.forEach(client -> cclient.addItem(client.toString()));
+        clients.forEach(client -> result.addItem(client.toString()));
+        return result;
     }
 
-    private void initFlights(){
+    private JComboBox initFlights() {
+        JComboBox result = new JComboBox();
         flights = new ArrayList<>(2);
         flights.add(new Flight("LX1", 300, 1200));
         flights.add(new Flight("LX2", 1000, 8000));
-        flights.forEach(flight -> cflight.addItem(flight.getName()));
+        flights.forEach(flight -> result.addItem(flight.toString()));
+        return result;
     }
 
     private void initFrame() {
@@ -135,8 +141,54 @@ public class ClientManagerFrame {
 
     }
 
+    private void addCurrency() {
+        String text = tcredits.getText();
+        if(text != null && text.matches("\\d+"))
+        {
+            getCurrentClient().updateCredit(Integer.parseInt(text));
+        }
+    }
+
+    private void onMoneyBook() {
+        String text;
+        if(getCurrentClient().getMoney() < getFlightMoneyPrice()){
+            text = "Not enough credits ( " + getFlightMoneyPrice() + "needed) to book " + getCurrentFlight().getName() + " in " + getCurrentTicketType().name() + " class";
+            getCurrentClient().setLastAction(text);
+        } else {
+            int price = -(int)getFlightMoneyPrice();
+            int milesAdded = (int)(getCurrentTicketType().translate() * getCurrentFlight().getMiles());
+            text = "Booked " + getCurrentFlight().getName() + " in " + getCurrentTicketType().name() + ", using credits";
+            getCurrentClient().setInfos(price, milesAdded, text);
+        }
+    }
+
+    private void onMilesBook() {
+        String text;
+        if(getCurrentClient().getMoney() < getFlightMoneyPrice()){
+            text = "Not enough miles ( " + getFlightMoneyPrice() + "needed) to book " + getCurrentFlight().getName() + " in " + getCurrentTicketType().name() + " class";
+            getCurrentClient().setLastAction(text);
+        } else {
+            int price = -(int)getFlightMoneyPrice();
+            int milesAdded = (int)(getCurrentTicketType().translate() * getCurrentFlight().getMiles());
+            text = "Booked " + getCurrentFlight().getName() + " in " + getCurrentTicketType().name() + ", using credits";
+            getCurrentClient().setInfos(price, milesAdded, text);
+        }
+    }
+
     private Client getCurrentClient() {
         return clients.get(cclient.getSelectedIndex());
+    }
+
+    private Flight getCurrentFlight() {
+        return flights.get(cflight.getSelectedIndex());
+    }
+
+    private TicketType getCurrentTicketType() {
+        return TicketType.values()[ctype.getSelectedIndex()];
+    }
+
+    private double getFlightMoneyPrice() {
+        return getCurrentFlight().getPrice() * getCurrentTicketType().multiplicator();
     }
 
     private void createObserverDetails() {

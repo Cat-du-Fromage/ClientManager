@@ -5,6 +5,7 @@ import MCR.entities.Subject;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 
 public class ClientDetailsFrame extends Observer {
     private final int WINDOW_WIDTH = 500;
@@ -31,13 +32,22 @@ public class ClientDetailsFrame extends Observer {
 
     private void initFrame() {
         frame.setTitle("Details of client");
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setResizable(false);
         frame.setLayout(new GridLayout(6, 1));
         frame.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         frame.setPreferredSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+
+        // Ajout d'un WindowListener pour détecter la fermeture
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                client.removeObserver(ClientDetailsFrame.this);
+            }
+        });
+
+        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     }
 
     private void initPanels() {

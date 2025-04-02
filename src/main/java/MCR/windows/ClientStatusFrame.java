@@ -6,15 +6,19 @@ import MCR.entities.Subject;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 public class ClientStatusFrame extends Observer {
     private final int WINDOW_WIDTH = 250;
     private final int WINDOW_HEIGHT = 150;
     private final JFrame frame;
-    private final LinkedList<JLabel> clientsLabels = new LinkedList<>();
-
+    //private final LinkedList<JLabel> clientsLabels = new LinkedList<>();
+    private final HashMap<Integer, JLabel> clientsLabels = new HashMap<Integer, JLabel>();
     private final ArrayList<Client> clients;
 
     public ClientStatusFrame(ArrayList<Client> clients) {
@@ -28,7 +32,6 @@ public class ClientStatusFrame extends Observer {
 
     private void initFrame() {
         frame.setTitle("Clients Manager");
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setResizable(false);
         frame.setFocusable(false);
         frame.setLayout(new GridLayout(6, 1));
@@ -37,12 +40,24 @@ public class ClientStatusFrame extends Observer {
 
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                for (Client client : clients) {
+                    client.removeObserver(ClientStatusFrame.this);
+                }
+            }
+        });
+
+        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     }
 
     private void initPanels() {
         for (int i = 0; i < clients.size(); i++) {
             JLabel client = new JLabel();
-            clientsLabels.add(client);
+            clientsLabels.put(clients.get(i).getUniqueId(), client);
+            //clientsLabels.add(clients.get(i), client);
             frame.add(client);
         }
     }
@@ -50,7 +65,9 @@ public class ClientStatusFrame extends Observer {
     private void updateFields(ArrayList<Client> clients) {
         for (int i = 0; i < clients.size(); i++) {
             Client client = clients.get(i);
-            JLabel label = clientsLabels.get(i);
+            updateField(client);
+            /*
+            JLabel label = clientsLabels.get(client.getUniqueId());
             Color color;
             label.setText(client.getLastName() + " " + client.getName() + " " + client.getStatus());
             switch (client.getStatus()) {
@@ -60,8 +77,21 @@ public class ClientStatusFrame extends Observer {
                 default -> color = Color.BLACK;
             }
             label.setForeground(color);
-
+            */
         }
+    }
+
+    private void updateField(Client client) {
+        JLabel label = clientsLabels.get(client.getUniqueId());
+        Color color;
+        label.setText(client.getLastName() + " " + client.getName() + " " + client.getStatus());
+        switch (client.getStatus()) {
+            case StatusType.SILVER -> color = Color.decode("#C0C0C0");
+            case StatusType.GOLD -> color = Color.decode("#FFD700");
+            case StatusType.PLATINUM -> color = Color.decode("#00FFFF");
+            default -> color = Color.BLACK;
+        }
+        label.setForeground(color);
     }
 
     @Override
@@ -69,9 +99,10 @@ public class ClientStatusFrame extends Observer {
         Client updatedClient = (Client) subject;
         for (Client c : clients) {
             if(c.getUniqueId() == updatedClient.getUniqueId()){
-                c.setStatus(updatedClient.getStatus());
+                //c.setStatus(updatedClient.getStatus());
+                updateField(updatedClient);
             }
         }
-        updateFields(clients);
+        //updateFields(clients);
     }
 }
