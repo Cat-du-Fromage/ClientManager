@@ -24,6 +24,15 @@ public abstract class AccountState {
     public StatusType getStatus() {return status;}
     public double getMoney() {return money;}
     public double getMiles() {return miles;}
+    public void setStatus(StatusType status) { this.status = status;}
+
+    public void setMoney(double money) {
+        this.money += money;
+    }
+
+    public void setMiles(double miles) {
+        this.miles += miles;
+    }
 
     public abstract AccountState onUpdate();
     //public abstract AccountState onDelete();

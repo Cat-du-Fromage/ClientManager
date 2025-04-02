@@ -20,4 +20,12 @@ public enum TicketType {
             case First -> 30;
         };
     }
+
+    public double translate() {
+        return switch (this) {
+            case Economy -> 0.1;
+            case Business -> 0.5;
+            case First -> 1;
+        };
+    }
 }

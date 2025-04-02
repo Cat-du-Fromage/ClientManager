@@ -11,7 +11,7 @@ public class GoldAccountState extends AccountState{
     @Override
     public AccountState onUpdate() {
         if(miles < 1000)
-            return new SilverAccountState(miles, miles);
+            return new SilverAccountState(money, miles);
         else if(miles >= 10000)
             return new PlatinumAccountState(money, miles);
         else

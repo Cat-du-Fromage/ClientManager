@@ -2,7 +2,7 @@ package MCR.entities;
 
 import MCR.entities.Account.AccountState;
 
-public class Client {
+public class Client extends Subject implements Comparable<Client>{
 
     private static int id = 0;
 
@@ -30,6 +30,28 @@ public class Client {
     public double getMiles() { return accountState.getMiles(); }
     public StatusType getStatus() { return accountState.getStatus(); }
     public String getLastAction() { return lastAction; }
+    public void setStatus(StatusType status) { accountState.setStatus(status); }
 
+    public void setMoney(double money) {
+        accountState.setMoney(money);
+        accountState = accountState.onUpdate();
+        this.notifyObservers();
+    }
 
+    public void setMiles(double miles) {
+        accountState.setMiles(miles);
+        accountState = accountState.onUpdate();
+        this.notifyObservers();
+    }
+
+    @Override
+    public int compareTo(Client other) {
+        int cmpNom = this.lastName.compareToIgnoreCase(other.lastName);
+        return (cmpNom != 0) ? cmpNom : this.name.compareToIgnoreCase(other.name);
+    }
+
+    @Override
+    public String toString() {
+        return name + " " + lastName;
+    }
 }

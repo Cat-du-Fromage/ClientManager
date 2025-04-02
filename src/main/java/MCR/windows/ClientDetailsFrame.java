@@ -1,5 +1,8 @@
 package MCR.windows;
 
+import MCR.entities.Client;
+import MCR.entities.Subject;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -9,10 +12,10 @@ public class ClientDetailsFrame extends Observer {
     private final JFrame frame;
     private final JLabel lclient, fclient, cclient, mclient, sclient, lflight;
 
-    private final ClientManagerFrame cmf;
+    private Client client;
 
-    public ClientDetailsFrame(ClientManagerFrame cmf) {
-        this.cmf = cmf;
+    public ClientDetailsFrame(Client client) {
+        this.client = client;
         frame = new JFrame();
         lclient = new JLabel();
         fclient = new JLabel();
@@ -21,7 +24,7 @@ public class ClientDetailsFrame extends Observer {
         sclient = new JLabel();
         lflight = new JLabel();
 
-        updateFields(cmf);
+        updateFields(client);
         initFrame();
         initPanels();
     }
@@ -47,16 +50,17 @@ public class ClientDetailsFrame extends Observer {
     }
 
     @Override
-    public void update() {
-        updateFields(cmf);
+    public void update(Subject subject) {
+        this.client = (Client) subject;
+        updateFields(this.client);
     }
 
-    private void updateFields(ClientManagerFrame cmf) {
-        lclient.setText("Last name: " + cmf.getIncrement());
-        fclient.setText("First name: " + cmf.getIncrement());
-        cclient.setText("Credits: " + cmf.getIncrement());
-        mclient.setText("Nb miles: " + cmf.getIncrement());
-        sclient.setText("Status: " + cmf.getIncrement());
-        lflight.setText("Last action: " + cmf.getIncrement());
+    private void updateFields(Client client) {
+        lclient.setText("Last name: " + client.getLastName());
+        fclient.setText("First name: " + client.getName());
+        cclient.setText("Credits: " + client.getMoney());
+        mclient.setText("Nb miles: " + client.getMiles());
+        sclient.setText("Status: " + client.getStatus());
+        lflight.setText("Last action: " + client.getLastAction());
     }
 }

@@ -1,4 +1,6 @@
-package MCR.windows;
+package MCR.entities;
+
+import MCR.windows.Observer;
 
 import java.util.LinkedList;
 
@@ -13,7 +15,7 @@ public abstract class Subject {
     }
     public void notifyObservers() {
         for (Observer observer : observers) {
-            observer.update();
+            observer.update(this);
         }
     }
 }

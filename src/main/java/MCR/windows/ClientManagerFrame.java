@@ -1,5 +1,8 @@
 package MCR.windows;
 
+import MCR.entities.*;
+import MCR.entities.Client;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -7,7 +10,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-public class ClientManagerFrame extends Subject {
+public class ClientManagerFrame {
     private final int WINDOW_WIDTH = 500;
     private final int WINDOW_HEIGHT = 300;
     private static ClientManagerFrame instance = null;
@@ -20,6 +23,9 @@ public class ClientManagerFrame extends Subject {
 
     // TODO Will be replaced by the real data
     private int increment = 0;
+
+    private ArrayList<Client> clients;
+    private ArrayList<Flight> flights;
 
     public static ClientManagerFrame getInstance() {
         if (instance == null) {
@@ -37,13 +43,22 @@ public class ClientManagerFrame extends Subject {
         lclient = new JLabel("Client");
         lcredits = new JLabel("Credits");
         lflight = new JLabel("Flight");
-        cclient = new JComboBox(new String[] {"Client1", "Client2", "Client3", "Client4", "Client5"});
-        cflight = new JComboBox(new String[] {"flight1", "flight2", "flight3", "flight4", "flight5"});
-        ctype = new JComboBox(new String[] {"type1", "type2"});
+
+        cclient = new JComboBox();
+        initClients();
+        cflight = new JComboBox();
+        initFlights();
+
+        ctype = new JComboBox();
+        updateFlightType();
+        cflight.addActionListener(_ -> updateFlightType());
+
+
         bdetails = new JButton("Details");
         bdetails.addActionListener(_ -> createObserverDetails());
+
         badd = new JButton("Add");
-        badd.addActionListener(_ -> increment());
+
         bbookcash = new JButton("Book (Cash)");
         bbookmiles = new JButton("Book (Miles)");
         bstatuses = new JButton("Statuses");
@@ -52,12 +67,38 @@ public class ClientManagerFrame extends Subject {
         bquit.addActionListener(_ -> System.exit(0));
         tcredits = new JTextField(10);
 
+        badd.addActionListener(_ -> getCurrentClient().setMoney(Integer.parseInt(tcredits.getText())));
+
         initFrame();
         initPanels();
         frame.add(panel1);
         frame.add(panel2);
         frame.add(panel3);
         frame.add(panel4);
+    }
+
+    private void updateFlightType() {
+        ctype.removeAllItems();
+        double currentFlight = flights.get(cflight.getSelectedIndex()).getPrice();
+        for (TicketType type : TicketType.values()) {
+            double price = currentFlight * type.multiplicator();
+            ctype.addItem(type.toString() + " " + price + "$");
+        }
+    }
+
+    private void initClients(){
+        clients = new ArrayList<Client>(2);
+        clients.add(new Client("Mathieu", "Rabot"));
+        clients.add(new Client("Florian", "Duruz"));
+        clients.sort(Client::compareTo);
+        clients.forEach(client -> cclient.addItem(client.toString()));
+    }
+
+    private void initFlights(){
+        flights = new ArrayList<>(2);
+        flights.add(new Flight("LX1", 300, 1200));
+        flights.add(new Flight("LX2", 1000, 8000));
+        flights.forEach(flight -> cflight.addItem(flight.getName()));
     }
 
     private void initFrame() {
@@ -94,28 +135,19 @@ public class ClientManagerFrame extends Subject {
 
     }
 
-    public void increment() {
-        increment++;
-        notifyObservers();
-    }
-
-    public int getIncrement() {
-        return increment;
+    private Client getCurrentClient() {
+        return clients.get(cclient.getSelectedIndex());
     }
 
     private void createObserverDetails() {
-        addObserver(new ClientDetailsFrame(this));
+        Client current = getCurrentClient();
+        current.addObserver(new ClientDetailsFrame(current));
     }
 
     private void createObserverStatus() {
-        addObserver(new ClientStatusFrame(this));
-    }
-
-    public ArrayList<Integer> getClients() {
-        ArrayList<Integer> clients = new ArrayList<>();
-        for (int i = 0; i < cclient.getItemCount(); i++) {
-            clients.add(i);
+        ClientStatusFrame csf = new ClientStatusFrame(clients);
+        for (Client current : clients) {
+            current.addObserver(csf);
         }
-        return clients;
     }
 }

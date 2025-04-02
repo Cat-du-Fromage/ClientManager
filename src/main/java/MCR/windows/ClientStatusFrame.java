@@ -1,7 +1,12 @@
 package MCR.windows;
 
+import MCR.entities.Client;
+import MCR.entities.StatusType;
+import MCR.entities.Subject;
+
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class ClientStatusFrame extends Observer {
@@ -10,15 +15,15 @@ public class ClientStatusFrame extends Observer {
     private final JFrame frame;
     private final LinkedList<JLabel> clientsLabels = new LinkedList<>();
 
-    private final ClientManagerFrame cmf;
+    private final ArrayList<Client> clients;
 
-    public ClientStatusFrame(ClientManagerFrame cmf) {
-        this.cmf = cmf;
+    public ClientStatusFrame(ArrayList<Client> clients) {
         frame = new JFrame();
 
+        this.clients = clients;
         initFrame();
         initPanels();
-        updateFields(cmf);
+        updateFields(clients);
     }
 
     private void initFrame() {
@@ -35,21 +40,38 @@ public class ClientStatusFrame extends Observer {
     }
 
     private void initPanels() {
-        for (Integer i : cmf.getClients()) {
+        for (int i = 0; i < clients.size(); i++) {
             JLabel client = new JLabel();
             clientsLabels.add(client);
             frame.add(client);
         }
     }
 
-    private void updateFields(ClientManagerFrame cmf) {
-        for (int i = 0; i < cmf.getClients().size(); i++) {
-            clientsLabels.get(i).setText("Client " + i + ": " + cmf.getClients().get(i));
+    private void updateFields(ArrayList<Client> clients) {
+        for (int i = 0; i < clients.size(); i++) {
+            Client client = clients.get(i);
+            JLabel label = clientsLabels.get(i);
+            Color color;
+            label.setText(client.getLastName() + " " + client.getName() + " " + client.getStatus());
+            switch (client.getStatus()) {
+                case StatusType.SILVER -> color = Color.decode("#C0C0C0");
+                case StatusType.GOLD -> color = Color.decode("#FFD700");
+                case StatusType.PLATINUM -> color = Color.decode("#00FFFF");
+                default -> color = Color.BLACK;
+            }
+            label.setForeground(color);
+
         }
     }
 
     @Override
-    public void update() {
-        updateFields(cmf);
+    public void update(Subject subject) {
+        Client updatedClient = (Client) subject;
+        for (Client c : clients) {
+            if(c.getUniqueId() == updatedClient.getUniqueId()){
+                c.setStatus(updatedClient.getStatus());
+            }
+        }
+        updateFields(clients);
     }
 }

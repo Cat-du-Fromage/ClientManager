@@ -20,6 +20,6 @@ public class PlatinumAccountState extends AccountState {
     @Override
     public AccountState onUpdate() {
         if(checkLocked()) return this;
-        return miles >= 10000 ? this : new GoldAccountState(miles, miles);
+        return miles >= 10000 ? this : new GoldAccountState(money, miles);
     }
 }

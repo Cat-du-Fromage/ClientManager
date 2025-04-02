@@ -10,6 +10,6 @@ public class SilverAccountState extends AccountState{
 
     @Override
     public AccountState onUpdate() {
-        return miles < 1000 ? this : new GoldAccountState(miles, miles);
+        return miles < 1000 ? this : new GoldAccountState(money, miles);
     }
 }
