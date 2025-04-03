@@ -5,7 +5,7 @@ public enum TicketType {
     Business,// : 2, 5
     First;// : 5, 30
 
-    public int multiplicator(){
+    public int moneyMultiplicator(){
         return switch (this){
             case Economy -> 1;
             case Business -> 2;
@@ -13,7 +13,7 @@ public enum TicketType {
         };
     }
 
-    public int coefficient() {
+    public int milesMultiplicator() {
         return switch (this) {
             case Economy -> 1;
             case Business -> 5;
@@ -21,7 +21,7 @@ public enum TicketType {
         };
     }
 
-    public double translate() {
+    public double coefficient() {
         return switch (this) {
             case Economy -> 0.1;
             case Business -> 0.5;

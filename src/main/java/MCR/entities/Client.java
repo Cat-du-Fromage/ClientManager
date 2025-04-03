@@ -30,7 +30,6 @@ public class Client extends Subject implements Comparable<Client>{
     public double getMiles() { return accountState.getMiles(); }
     public StatusType getStatus() { return accountState.getStatus(); }
     public String getLastAction() { return lastAction; }
-    //public void setStatus(StatusType status) { accountState.setStatus(status); }
 
     public void setLastAction(String lastAction) {
         this.lastAction = lastAction;
@@ -38,22 +37,22 @@ public class Client extends Subject implements Comparable<Client>{
     }
 
     public void updateCredit(double amount){
-        accountState.setMoney(amount);
+        accountState.updateMoney(amount);
         accountState = accountState.onUpdate();
         this.notifyObservers();
     }
 
     public void updateMiles(double miles) {
-        accountState.setMiles(miles);
+        accountState.updateMiles(miles);
         accountState = accountState.onUpdate();
         this.notifyObservers();
     }
 
     public void setInfos(double money, double miles, String lastAction){
-        accountState.setMoney(money);
-        accountState.setMiles(miles);
+        accountState.updateMoney(money);
+        accountState.updateMiles(miles);
         this.lastAction = lastAction;
-        accountState = accountState.onUpdate();
+        this.accountState = accountState.onUpdate();
         this.notifyObservers();
     }
 

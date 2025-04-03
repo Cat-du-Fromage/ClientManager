@@ -61,7 +61,7 @@ public class ClientManagerFrame {
         bbookcash.addActionListener(_ -> onMoneyBook());
 
         bbookmiles = new JButton("Book (Miles)");
-
+        bbookmiles.addActionListener(_ -> onMilesBook());
 
         bstatuses = new JButton("Statuses");
         bstatuses.addActionListener(_ -> createObserverStatus());
@@ -83,7 +83,7 @@ public class ClientManagerFrame {
         ctype.removeAllItems();
         double currentFlight = flights.get(cflight.getSelectedIndex()).getPrice();
         for (TicketType type : TicketType.values()) {
-            double price = currentFlight * type.multiplicator();
+            int price = (int)(currentFlight * type.moneyMultiplicator());
             ctype.addItem(type.toString() + " " + price + "$");
         }
     }
@@ -145,18 +145,21 @@ public class ClientManagerFrame {
         String text = tcredits.getText();
         if(text != null && text.matches("\\d+"))
         {
-            getCurrentClient().updateCredit(Integer.parseInt(text));
+            int amount = Integer.parseInt(text);
+            getCurrentClient().updateCredit(amount);
+            getCurrentClient().setLastAction("Credits added : " + amount);
         }
     }
 
     private void onMoneyBook() {
         String text;
-        if(getCurrentClient().getMoney() < getFlightMoneyPrice()){
-            text = "Not enough credits ( " + getFlightMoneyPrice() + "needed) to book " + getCurrentFlight().getName() + " in " + getCurrentTicketType().name() + " class";
+        int moneyPrice = getFlightMoneyPrice();
+        if(getCurrentClient().getMoney() < moneyPrice){
+            text = "Not enough credits (" + moneyPrice + " needed) to book " + getCurrentFlight().getName() + " in " + getCurrentTicketType().name() + " class";
             getCurrentClient().setLastAction(text);
         } else {
-            int price = -(int)getFlightMoneyPrice();
-            int milesAdded = (int)(getCurrentTicketType().translate() * getCurrentFlight().getMiles());
+            int price = -moneyPrice;
+            int milesAdded = (int)(getCurrentTicketType().coefficient() * getCurrentFlight().getMiles());
             text = "Booked " + getCurrentFlight().getName() + " in " + getCurrentTicketType().name() + ", using credits";
             getCurrentClient().setInfos(price, milesAdded, text);
         }
@@ -164,14 +167,14 @@ public class ClientManagerFrame {
 
     private void onMilesBook() {
         String text;
-        if(getCurrentClient().getMoney() < getFlightMoneyPrice()){
-            text = "Not enough miles ( " + getFlightMoneyPrice() + "needed) to book " + getCurrentFlight().getName() + " in " + getCurrentTicketType().name() + " class";
+        int milesPrice = getFlightMilesPrice();
+        if(getCurrentClient().getMiles() < milesPrice){
+            text = "Not enough miles (" + milesPrice + " needed) to book " + getCurrentFlight().getName() + " in " + getCurrentTicketType().name() + " class";
             getCurrentClient().setLastAction(text);
         } else {
-            int price = -(int)getFlightMoneyPrice();
-            int milesAdded = (int)(getCurrentTicketType().translate() * getCurrentFlight().getMiles());
-            text = "Booked " + getCurrentFlight().getName() + " in " + getCurrentTicketType().name() + ", using credits";
-            getCurrentClient().setInfos(price, milesAdded, text);
+            int milesDecreased = -milesPrice;
+            text = "Booked " + getCurrentFlight().getName() + " in " + getCurrentTicketType().name() + ", using miles";
+            getCurrentClient().setInfos(0, milesDecreased, text);
         }
     }
 
@@ -187,8 +190,12 @@ public class ClientManagerFrame {
         return TicketType.values()[ctype.getSelectedIndex()];
     }
 
-    private double getFlightMoneyPrice() {
-        return getCurrentFlight().getPrice() * getCurrentTicketType().multiplicator();
+    private int getFlightMoneyPrice() {
+        return (int)(getCurrentFlight().getPrice() * getCurrentTicketType().moneyMultiplicator());
+    }
+
+    private int getFlightMilesPrice() {
+        return (int)(getCurrentFlight().getMiles() * getCurrentTicketType().milesMultiplicator());
     }
 
     private void createObserverDetails() {

@@ -17,6 +17,6 @@ public class Flight {
 
     @Override
     public String toString() {
-        return name + " (" + miles + " miles)";
+        return name + " (" + (int)(miles) + " miles)";
     }
 }

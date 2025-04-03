@@ -68,8 +68,8 @@ public class ClientDetailsFrame extends Observer {
     private void updateFields(Client client) {
         lclient.setText("Last name: " + client.getLastName());
         fclient.setText("First name: " + client.getName());
-        cclient.setText("Credits: " + client.getMoney());
-        mclient.setText("Nb miles: " + client.getMiles());
+        cclient.setText("Credits: " + (int)client.getMoney());
+        mclient.setText("Nb miles: " + (int)client.getMiles());
         sclient.setText("Status: " + client.getStatus());
         lflight.setText("Last action: " + client.getLastAction());
     }

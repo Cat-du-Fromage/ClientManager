@@ -8,6 +8,8 @@ public abstract class AccountState {
     protected double miles;
 
     protected AccountState(StatusType status, double money, double miles){
+        this.money = money;
+        this.miles = miles;
         this.status = status;
     }
 
@@ -24,17 +26,15 @@ public abstract class AccountState {
     public StatusType getStatus() {return status;}
     public double getMoney() {return money;}
     public double getMiles() {return miles;}
-    //public void setStatus(StatusType status) { this.status = status;}
 
-    public void setMoney(double money) {
+    public void updateMoney(double money) {
         this.money += money;
     }
 
-    public void setMiles(double miles) {
+    public void updateMiles(double miles) {
         this.miles += miles;
     }
 
     public abstract AccountState onUpdate();
-    //public abstract AccountState onDelete();
 
 }
