@@ -161,7 +161,7 @@ public class ClientManagerFrame {
             int price = -moneyPrice;
             int milesAdded = (int)(getCurrentTicketType().coefficient() * getCurrentFlight().getMiles());
             text = "Booked " + getCurrentFlight().getName() + " in " + getCurrentTicketType().name() + ", using credits";
-            getCurrentClient().setInfos(price, milesAdded, text);
+            getCurrentClient().updateInfos(price, milesAdded, text);
         }
     }
 
@@ -174,7 +174,7 @@ public class ClientManagerFrame {
         } else {
             int milesDecreased = -milesPrice;
             text = "Booked " + getCurrentFlight().getName() + " in " + getCurrentTicketType().name() + ", using miles";
-            getCurrentClient().setInfos(0, milesDecreased, text);
+            getCurrentClient().updateInfos(0, milesDecreased, text);
         }
     }
 
