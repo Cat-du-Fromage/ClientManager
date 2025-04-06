@@ -1,3 +1,10 @@
+// ================================================================================
+// File : ClientDetailsFrame.java
+// Project name : ClientManager
+// Project members :
+// - Florian Duruz, Mathieu Rabot
+// File created by Florian Duruz, Mathieu Rabot
+// ================================================================================
 package MCR.windows;
 
 import MCR.entities.Client;
@@ -7,6 +14,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+/**
+ * ClientDetailsFrame is a GUI class that displays the details of a client.
+ * It extends Observer to update the displayed information when the client changes.
+ */
 public class ClientDetailsFrame extends Observer {
     private final int WINDOW_WIDTH = 500;
     private final int WINDOW_HEIGHT = 300;
@@ -15,6 +26,12 @@ public class ClientDetailsFrame extends Observer {
 
     private Client client;
 
+    /**
+     * Constructor for ClientDetailsFrame.
+     * Initializes the frame and its components.
+     *
+     * @param client The client whose details are to be displayed.
+     */
     public ClientDetailsFrame(Client client) {
         this.client = client;
         frame = new JFrame();
@@ -30,6 +47,9 @@ public class ClientDetailsFrame extends Observer {
         initPanels();
     }
 
+    /**
+     * Initializes the JFrame with properties.
+     */
     private void initFrame() {
         frame.setTitle("Details of client");
         frame.setResizable(false);
@@ -50,6 +70,9 @@ public class ClientDetailsFrame extends Observer {
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     }
 
+    /**
+     * Initializes the panels and adds them to the frame.
+     */
     private void initPanels() {
         frame.add(lclient);
         frame.add(cclient);
@@ -59,12 +82,23 @@ public class ClientDetailsFrame extends Observer {
         frame.add(lflight);
     }
 
+    /**
+     * Updates the displayed information when the client changes.
+     * This method is called by the subject (Client) when it notifies its observers.
+     *
+     * @param subject The subject (Client) that has changed.
+     */
     @Override
     public void update(Subject subject) {
         this.client = (Client) subject;
         updateFields(this.client);
     }
 
+    /**
+     * Updates the labels with the client's information.
+     *
+     * @param client The client whose information is to be displayed.
+     */
     private void updateFields(Client client) {
         lclient.setText("Last name: " + client.getLastName());
         fclient.setText("First name: " + client.getName());

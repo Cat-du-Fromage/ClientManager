@@ -1,3 +1,10 @@
+// ================================================================================
+// File : ClientManagerFrame.java
+// Project name : ClientManager
+// Project members :
+// - Florian Duruz, Mathieu Rabot
+// File created by Florian Duruz, Mathieu Rabot
+// ================================================================================
 package MCR.windows;
 
 import MCR.entities.*;
@@ -7,6 +14,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
+/**
+ * ClientManagerFrame is a GUI class that manages client interactions and flight bookings.
+ * It provides functionalities to add credits, book flights, and view client statuses.
+ */
 public class ClientManagerFrame {
     private final int WINDOW_WIDTH = 500;
     private final int WINDOW_HEIGHT = 300;
@@ -18,12 +29,13 @@ public class ClientManagerFrame {
     private final JButton bdetails, badd, bbookcash, bbookmiles, bstatuses, bquit;
     private final JTextField tcredits;
 
-    // TODO Will be replaced by the real data
-    private int increment = 0;
-
     private ArrayList<Client> clients;
     private ArrayList<Flight> flights;
 
+    /**
+     * Singleton pattern to ensure only one instance of ClientManagerFrame exists.
+     * @return the single instance of ClientManagerFrame
+     */
     public static ClientManagerFrame getInstance() {
         if (instance == null) {
             instance = new ClientManagerFrame();
@@ -31,6 +43,9 @@ public class ClientManagerFrame {
         return instance;
     }
 
+    /**
+     * Private constructor to initialize the GUI components and layout.
+     */
     private ClientManagerFrame() {
         frame = new JFrame();
         panel1 = new JPanel();
@@ -41,10 +56,8 @@ public class ClientManagerFrame {
         lcredits = new JLabel("Credits");
         lflight = new JLabel("Flight");
 
-        //cclient = new JComboBox();
         cclient = initClients();
 
-        //cflight = new JComboBox();
         cflight = initFlights();
 
         ctype = new JComboBox();
@@ -79,6 +92,12 @@ public class ClientManagerFrame {
         frame.add(panel4);
     }
 
+    
+    /**
+     * Updates the flight type based on the selected flight.
+     * It removes all items from the JComboBox and adds new items based on the selected flight's price.
+     * The price is calculated using the TicketType's money multiplicator.
+     */
     private void updateFlightType() {
         ctype.removeAllItems();
         double currentFlight = flights.get(cflight.getSelectedIndex()).getPrice();
@@ -88,6 +107,11 @@ public class ClientManagerFrame {
         }
     }
 
+    /**
+     * Initializes the JComboBox with client names.
+     * It creates a list of clients, sorts them, and adds them to the JComboBox.
+     * @return the initialized JComboBox with client names
+     */
     private JComboBox initClients() {
         JComboBox result = new JComboBox();
         clients = new ArrayList<Client>(2);
@@ -98,6 +122,11 @@ public class ClientManagerFrame {
         return result;
     }
 
+    /**
+     * Initializes the JComboBox with flight names.
+     * It creates a list of flights and adds them to the JComboBox.
+     * @return the initialized JComboBox with flight names
+     */
     private JComboBox initFlights() {
         JComboBox result = new JComboBox();
         flights = new ArrayList<>(2);
@@ -107,6 +136,10 @@ public class ClientManagerFrame {
         return result;
     }
 
+    /**
+     * Initializes the JFrame with properties.
+     * Sets the title, default close operation, layout, size, and visibility.
+     */
     private void initFrame() {
         frame.setTitle("Clients Manager");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -121,6 +154,10 @@ public class ClientManagerFrame {
         frame.setVisible(true);
     }
 
+    /**
+     * Initializes the panels and adds components to them.
+     * Each panel contains specific components related to client management.
+     */
     private void initPanels() {
         panel1.add(lclient);
         panel1.add(cclient);
@@ -141,6 +178,10 @@ public class ClientManagerFrame {
 
     }
 
+    /**
+     * Adds currency to the selected client's account.
+     * It retrieves the amount from the text field, validates it, and updates the client's account.
+     */
     private void addCurrency() {
         String text = tcredits.getText();
         if(text != null && text.matches("\\d+"))
@@ -151,6 +192,10 @@ public class ClientManagerFrame {
         }
     }
 
+    /**
+     * Books a flight for the selected client using cash.
+     * It checks if the client has enough credits and updates their account accordingly.
+     */
     private void onMoneyBook() {
         String text;
         int moneyPrice = getFlightMoneyPrice();
@@ -165,6 +210,10 @@ public class ClientManagerFrame {
         }
     }
 
+    /**
+     * Books a flight for the selected client using miles.
+     * It checks if the client has enough miles and updates their account accordingly.
+     */
     private void onMilesBook() {
         String text;
         int milesPrice = getFlightMilesPrice();
@@ -178,31 +227,59 @@ public class ClientManagerFrame {
         }
     }
 
+    /**
+     * Gets the currently selected client from the JComboBox.
+     * @return the currently selected client
+     */
     private Client getCurrentClient() {
         return clients.get(cclient.getSelectedIndex());
     }
 
+    /**
+     * Gets the currently selected flight from the JComboBox.
+     * @return the currently selected flight
+     */
     private Flight getCurrentFlight() {
         return flights.get(cflight.getSelectedIndex());
     }
 
+    /**
+     * Gets the currently selected ticket type from the JComboBox.
+     * @return the currently selected ticket type
+     */
     private TicketType getCurrentTicketType() {
         return TicketType.values()[ctype.getSelectedIndex()];
     }
 
+    /**
+     * Gets the price of the flight in money based on the selected ticket type.
+     * @return the price of the flight in money
+     */
     private int getFlightMoneyPrice() {
         return (int)(getCurrentFlight().getPrice() * getCurrentTicketType().moneyMultiplicator());
     }
 
+    /**
+     * Gets the price of the flight in miles based on the selected ticket type.
+     * @return the price of the flight in miles
+     */
     private int getFlightMilesPrice() {
         return (int)(getCurrentFlight().getMiles() * getCurrentTicketType().milesMultiplicator());
     }
 
+    /**
+     * Creates an observer for the client details.
+     * It adds a new ClientDetailsFrame as an observer to the currently selected client.
+     */
     private void createObserverDetails() {
         Client current = getCurrentClient();
         current.addObserver(new ClientDetailsFrame(current));
     }
 
+    /**
+     * Creates an observer for the client status.
+     * It adds a new ClientStatusFrame as an observer to each client in the list.
+     */
     private void createObserverStatus() {
         ClientStatusFrame csf = new ClientStatusFrame(clients);
         for (Client current : clients) {

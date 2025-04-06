@@ -1,3 +1,10 @@
+// ================================================================================
+// File : ClientStatusFrame.java
+// Project name : ClientManager
+// Project members :
+// - Florian Duruz, Mathieu Rabot
+// File created by Florian Duruz, Mathieu Rabot
+// ================================================================================
 package MCR.windows;
 
 import MCR.entities.Client;
@@ -13,6 +20,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+/**
+ * ClientStatusFrame is a GUI class that displays the status of multiple clients.
+ * It extends Observer to update the displayed information when a client's status changes.
+ */
 public class ClientStatusFrame extends Observer {
     private final int WINDOW_WIDTH = 250;
     private final int WINDOW_HEIGHT = 150;
@@ -20,6 +31,12 @@ public class ClientStatusFrame extends Observer {
     private final HashMap<Integer, JLabel> clientsLabels = new HashMap<Integer, JLabel>();
     private final ArrayList<Client> clients;
 
+    /**
+     * Constructor for ClientStatusFrame.
+     * Initializes the frame and its components.
+     *
+     * @param clients The list of clients whose statuses are to be displayed.
+     */
     public ClientStatusFrame(ArrayList<Client> clients) {
         frame = new JFrame();
 
@@ -29,6 +46,9 @@ public class ClientStatusFrame extends Observer {
         updateFields(clients);
     }
 
+    /**
+     * Initializes the JFrame with properties.
+     */
     private void initFrame() {
         frame.setTitle("Clients Manager");
         frame.setResizable(false);
@@ -52,6 +72,9 @@ public class ClientStatusFrame extends Observer {
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     }
 
+    /**
+     * Initializes the panels for each client.
+     */
     private void initPanels() {
         for (int i = 0; i < clients.size(); i++) {
             JLabel client = new JLabel();
@@ -60,6 +83,11 @@ public class ClientStatusFrame extends Observer {
         }
     }
 
+    /**
+     * Updates the displayed information for all clients.
+     *
+     * @param clients The list of clients whose statuses are to be updated.
+     */
     private void updateFields(ArrayList<Client> clients) {
         for (int i = 0; i < clients.size(); i++) {
             Client client = clients.get(i);
@@ -67,6 +95,11 @@ public class ClientStatusFrame extends Observer {
         }
     }
 
+    /**
+     * Updates the displayed information for a specific client.
+     *
+     * @param client The client whose status is to be updated.
+     */
     private void updateField(Client client) {
         JLabel label = clientsLabels.get(client.getUniqueId());
         Color color;
@@ -80,6 +113,12 @@ public class ClientStatusFrame extends Observer {
         label.setForeground(color);
     }
 
+    /**
+     * Updates the displayed information when the client changes.
+     * This method is called by the subject (Client) when it notifies its observers.
+     *
+     * @param subject The subject (Client) that has changed.
+     */
     @Override
     public void update(Subject subject) {
         Client updatedClient = (Client) subject;
