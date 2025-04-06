@@ -21,7 +21,7 @@ public class GoldAccountState extends AccountState {
      * @param money the current money balance of the account
      * @param miles the current miles balance of the account
      */
-    protected GoldAccountState(double money, double miles) {
+    public GoldAccountState(double money, double miles) {
         super(StatusType.GOLD, money, miles);
     }
 

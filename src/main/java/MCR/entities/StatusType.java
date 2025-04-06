@@ -15,22 +15,4 @@ public enum StatusType {
     SILVER,
     GOLD,
     PLATINUM;
-
-    /**
-     * Returns the next status level in the hierarchy.
-     * The progression is SILVER → GOLD → PLATINUM.
-     * Once PLATINUM is reached, it remains the highest possible status.
-     *
-     * @return the next status level:
-     *         - SILVER returns GOLD
-     *         - GOLD returns PLATINUM
-     *         - PLATINUM returns PLATINUM (no higher status available)
-     */
-    public StatusType next(){
-        return switch(this){
-            case SILVER -> GOLD;
-            case GOLD -> PLATINUM;
-            case PLATINUM -> PLATINUM;
-        };
-    }
 }
